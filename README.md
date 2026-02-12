@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Juuksurisalongi Broneerimissüsteem
+
+Hair salon booking system with multi-barber support, bilingual interface (Estonian/English), and admin panel.
+
+## Tech Stack
+
+- **Next.js 16** (App Router, TypeScript)
+- **Prisma ORM** + PostgreSQL
+- **Tailwind CSS** + shadcn/ui
+- **NextAuth v5** (admin authentication)
+- **next-intl** (i18n: Estonian + English)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 22+
+- PostgreSQL 14+
+
+### Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your DATABASE_URL
+
+# Create database
+createdb juuksur_booking
+
+# Push schema to database
+npx prisma db push
+
+# Generate Prisma client
+npx prisma generate
+
+# Seed database with sample data
+npm run db:seed
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Default Admin Login
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Email: `admin@juuksur.ee`
+- Password: `admin123`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
 
-## Learn More
+### Client-Facing
+- Multi-step booking wizard (barber -> service -> date/time -> contact info -> confirm)
+- Available time slot calculation based on barber schedules, breaks, and existing bookings
+- Bilingual interface (Estonian / English)
+- Responsive design
 
-To learn more about Next.js, take a look at the following resources:
+### Admin Panel (`/admin`)
+- Dashboard with today's appointments and statistics
+- Barber management (CRUD, profile, services assignment)
+- Service management (CRUD, bilingual names/descriptions)
+- Schedule management (weekly hours per barber, breaks)
+- Appointment management (list, filter, status updates, notes)
+- Salon settings (name, contact, booking parameters)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── [locale]/        # Public pages (ET/EN)
+│   ├── admin/           # Admin panel
+│   └── api/             # API routes
+├── components/
+│   ├── ui/              # shadcn/ui components
+│   ├── booking/         # Booking wizard components
+│   ├── admin/           # Admin panel components
+│   └── shared/          # Shared components
+├── lib/                 # Utilities, Prisma client, validators
+└── i18n/                # Internationalization config
+```
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run dev          # Development server
+npm run build        # Production build
+npm run start        # Production server
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:seed      # Seed database
+npm run db:studio    # Open Prisma Studio
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+### Docker
+
+```bash
+docker compose up -d  # Start PostgreSQL
+npm run build         # Build the app
+npm start             # Start production server
+```
+
+### With Dockerfile
+
+```bash
+docker build -t juuksur .
+docker run -p 3000:3000 \
+  -e DATABASE_URL="postgresql://..." \
+  -e AUTH_SECRET="your-secret" \
+  juuksur
+```

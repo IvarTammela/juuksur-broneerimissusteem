@@ -1,0 +1,81 @@
+{
+  "common": {
+    "book": "Book",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "noResults": "No results found",
+    "required": "Required field",
+    "phone": "Phone",
+    "email": "Email",
+    "name": "Name",
+    "price": "Price",
+    "duration": "Duration",
+    "minutes": "min",
+    "euro": "€"
+  },
+  "nav": {
+    "home": "Home",
+    "booking": "Book Appointment",
+    "barbers": "Barbers",
+    "services": "Services & Prices",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Welcome to our hair salon",
+    "subtitle": "Professional hair care in a friendly atmosphere",
+    "ctaButton": "Book an appointment",
+    "ourBarbers": "Our barbers",
+    "ourServices": "Our services"
+  },
+  "booking": {
+    "title": "Book an appointment",
+    "step1": "Choose barber",
+    "step2": "Choose service",
+    "step3": "Choose time",
+    "step4": "Your details",
+    "step5": "Confirmation",
+    "selectBarber": "Select your barber",
+    "selectService": "Select a service",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "noSlotsAvailable": "No available times. Please choose another date.",
+    "yourInfo": "Your contact details",
+    "clientName": "Your name",
+    "clientPhone": "Phone number",
+    "clientEmail": "Email address (optional)",
+    "notes": "Notes (optional)",
+    "summary": "Booking summary",
+    "barber": "Barber",
+    "service": "Service",
+    "date": "Date",
+    "time": "Time",
+    "total": "Total",
+    "confirmBooking": "Confirm booking",
+    "bookingConfirmed": "Booking confirmed!",
+    "bookingConfirmedMessage": "Your booking has been successfully registered.",
+    "bookingId": "Booking ID"
+  },
+  "barbers": {
+    "title": "Our barbers",
+    "subtitle": "Meet our professional team"
+  },
+  "services": {
+    "title": "Services & Prices",
+    "subtitle": "Our complete price list",
+    "from": "from"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "address": "Address",
+    "contact": "Contact"
+  }
+}

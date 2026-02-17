@@ -1,114 +1,122 @@
 # Juuksurisalongi Broneerimissüsteem
 
-Hair salon booking system with multi-barber support, bilingual interface (Estonian/English), and admin panel.
+Juuksurisalongi veebipõhine broneerimissüsteem, mis võimaldab klientidel broneerida aegu ja adminil hallata broneeringuid, juuksureid ja teenuseid.
 
-## Tech Stack
+**Live:** [http://koolihaldus.ee/](http://koolihaldus.ee/)
 
-- **Next.js 16** (App Router, TypeScript)
-- **Prisma ORM** + PostgreSQL
-- **Tailwind CSS** + shadcn/ui
-- **NextAuth v5** (admin authentication)
-- **next-intl** (i18n: Estonian + English)
+## Tehnoloogiad
 
-## Getting Started
+- **PHP 8.4** (kohandatud MVC raamistik)
+- **PostgreSQL 17** (andmebaas)
+- **Apache 2.4** (mod_rewrite)
+- **Tailwind CSS** (CDN)
+- **Vanilla JavaScript** (booking wizard)
+- **Composer** (PSR-4 autoloading)
 
-### Prerequisites
+## Arhitektuur
 
-- Node.js 22+
+Kohandatud MVC (Model-View-Controller) raamistik:
+
+- **Model** — andmebaasipäringud (PDO prepared statements)
+- **View** — PHP template failid Tailwind CSS-iga
+- **Controller** — äriloogika, marsruutimine, sisendi valideerimine
+
+Turvalisus:
+- CSRF tokenid kõikidel vormidel
+- SQL injection kaitse (PDO prepared statements)
+- XSS kaitse (htmlspecialchars väljunditel)
+- bcrypt paroolihashimine
+- Sessioonipõhine autentimine
+
+Topeltbroneeringu vältimine: PostgreSQL `pg_advisory_xact_lock()` transaktsioonisiseselt.
+
+## Projekti struktuur
+
+```
+php/
+├── index.php                    # Front controller
+├── .htaccess                    # URL rewrite
+├── composer.json                # PSR-4 autoloading
+├── config/
+│   ├── database.php             # Andmebaasi seaded
+│   └── app.php                  # Rakenduse seaded
+├── src/
+│   ├── Core/                    # MVC raamistik
+│   │   ├── App.php              # Bootstrap + marsruudid
+│   │   ├── Router.php           # GET/POST marsruutija
+│   │   ├── Controller.php       # Base controller
+│   │   ├── Database.php         # PDO singleton
+│   │   ├── Session.php          # Sessioon + CSRF
+│   │   └── Validator.php        # Sisendi valideerimine
+│   ├── Controllers/
+│   │   ├── PageController.php           # Avalikud lehed
+│   │   ├── BookingController.php        # Broneerimise wizard + salvestamine
+│   │   ├── AvailabilityController.php   # JSON API vabade aegade jaoks
+│   │   ├── AdminAuthController.php      # Admin login/logout
+│   │   ├── AdminAppointmentController.php # Broneeringute haldus
+│   │   ├── AdminBarberController.php    # Juuksurite CRUD
+│   │   └── AdminServiceController.php   # Teenuste CRUD
+│   ├── Models/                  # Andmemudelid
+│   └── Services/
+│       └── TimeSlotService.php  # Vabade aegade algoritm
+├── views/                       # PHP template vaated
+├── public/                      # CSS + JavaScript
+├── database/
+│   ├── schema.sql               # Tabelite loomine
+│   └── seed.sql                 # Algandmed
+└── docs/
+    └── KIRJELDUS.md             # Koolitöö kirjeldus
+```
+
+## Paigaldamine
+
+### Eeldused
+
+- PHP 8.4+
 - PostgreSQL 14+
+- Apache (mod_rewrite)
+- Composer
 
-### Setup
-
-```bash
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your DATABASE_URL
-
-# Create database
-createdb juuksur_booking
-
-# Push schema to database
-npx prisma db push
-
-# Generate Prisma client
-npx prisma generate
-
-# Seed database with sample data
-npm run db:seed
-
-# Start development server
-npm run dev
-```
-
-### Default Admin Login
-
-- Email: `admin@juuksur.ee`
-- Password: `admin123`
-
-## Features
-
-### Client-Facing
-- Multi-step booking wizard (barber -> service -> date/time -> contact info -> confirm)
-- Available time slot calculation based on barber schedules, breaks, and existing bookings
-- Bilingual interface (Estonian / English)
-- Responsive design
-
-### Admin Panel (`/admin`)
-- Dashboard with today's appointments and statistics
-- Barber management (CRUD, profile, services assignment)
-- Service management (CRUD, bilingual names/descriptions)
-- Schedule management (weekly hours per barber, breaks)
-- Appointment management (list, filter, status updates, notes)
-- Salon settings (name, contact, booking parameters)
-
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── [locale]/        # Public pages (ET/EN)
-│   ├── admin/           # Admin panel
-│   └── api/             # API routes
-├── components/
-│   ├── ui/              # shadcn/ui components
-│   ├── booking/         # Booking wizard components
-│   ├── admin/           # Admin panel components
-│   └── shared/          # Shared components
-├── lib/                 # Utilities, Prisma client, validators
-└── i18n/                # Internationalization config
-```
-
-## Scripts
+### Seadistamine
 
 ```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run start        # Production server
-npm run db:generate  # Generate Prisma client
-npm run db:push      # Push schema to database
-npm run db:seed      # Seed database
-npm run db:studio    # Open Prisma Studio
+# Klooni repo
+git clone https://github.com/ivartammela001-a11y/juuksur-broneerimissusteem.git
+cd juuksur-broneerimissusteem/php
+
+# Paigalda autoloader
+composer install
+
+# Seadista andmebaas
+cp config/database.php config/database.local.php
+# Muuda config/database.php oma andmebaasi andmetega
+
+# Loo tabelid
+psql -U kasutaja -d andmebaas -f database/schema.sql
+
+# Lisa algandmed
+psql -U kasutaja -d andmebaas -f database/seed.sql
 ```
 
-## Deployment
+### Vaikimisi admin sisselogimine
 
-### Docker
+- E-post: `admin@juuksur.ee`
+- Parool: `admin123`
 
-```bash
-docker compose up -d  # Start PostgreSQL
-npm run build         # Build the app
-npm start             # Start production server
-```
+## Funktsionaalsus
 
-### With Dockerfile
+### Kliendi vaade
+- Avalehekülg salongi infoga
+- Teenuste ja juuksurite lehed
+- Mitmeastmeline broneerimise wizard (juuksur → teenus → kuupäev/kellaaeg → kontaktandmed → kinnitus)
+- Vabade aegade arvutamine töögraafiku, pauside ja olemasolevate broneeringute põhjal
 
-```bash
-docker build -t juuksur .
-docker run -p 3000:3000 \
-  -e DATABASE_URL="postgresql://..." \
-  -e AUTH_SECRET="your-secret" \
-  juuksur
-```
+### Admin paneel (`/admin`)
+- Dashboard tänaste broneeringute ja statistikaga
+- Broneeringute haldamine (nimekiri, filtreerimine, staatuse muutmine)
+- Juuksurite haldamine (CRUD, teenuste hindade ja kestuste määramine)
+- Teenuste haldamine (CRUD)
+
+## Majutus
+
+Rakendus töötab ElkData jagatud majutusel (Apache + PHP FastCGI + PostgreSQL).

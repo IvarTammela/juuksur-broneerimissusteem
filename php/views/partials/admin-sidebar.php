@@ -11,6 +11,14 @@
            class="block px-3 py-2 rounded-lg text-sm <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/broneeringud') ? 'bg-gray-700 font-semibold' : 'text-gray-300 hover:bg-gray-800' ?>">
             Broneeringud
         </a>
+        <a href="/admin/juuksurid"
+           class="block px-3 py-2 rounded-lg text-sm <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/juuksurid') ? 'bg-gray-700 font-semibold' : 'text-gray-300 hover:bg-gray-800' ?>">
+            Juuksurid
+        </a>
+        <a href="/admin/teenused"
+           class="block px-3 py-2 rounded-lg text-sm <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/teenused') ? 'bg-gray-700 font-semibold' : 'text-gray-300 hover:bg-gray-800' ?>">
+            Teenused
+        </a>
     </nav>
     <div class="mt-auto pt-8 border-t border-gray-700 mt-8">
         <a href="/" class="block px-3 py-2 text-sm text-gray-400 hover:text-white">

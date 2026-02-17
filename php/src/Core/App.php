@@ -7,6 +7,8 @@ use App\Controllers\BookingController;
 use App\Controllers\AvailabilityController;
 use App\Controllers\AdminAuthController;
 use App\Controllers\AdminAppointmentController;
+use App\Controllers\AdminBarberController;
+use App\Controllers\AdminServiceController;
 
 class App
 {
@@ -49,6 +51,22 @@ class App
         $this->router->get('/admin/broneeringud', [AdminAppointmentController::class, 'index']);
         $this->router->get('/admin/broneeringud/{id}', [AdminAppointmentController::class, 'show']);
         $this->router->post('/admin/broneeringud/{id}/staatus', [AdminAppointmentController::class, 'updateStatus']);
+
+        // Admin teenused (CRUD)
+        $this->router->get('/admin/teenused', [AdminServiceController::class, 'index']);
+        $this->router->get('/admin/teenused/lisa', [AdminServiceController::class, 'create']);
+        $this->router->post('/admin/teenused/salvesta', [AdminServiceController::class, 'store']);
+        $this->router->get('/admin/teenused/{id}', [AdminServiceController::class, 'edit']);
+        $this->router->post('/admin/teenused/{id}/uuenda', [AdminServiceController::class, 'update']);
+        $this->router->post('/admin/teenused/{id}/kustuta', [AdminServiceController::class, 'delete']);
+
+        // Admin juuksurid (CRUD)
+        $this->router->get('/admin/juuksurid', [AdminBarberController::class, 'index']);
+        $this->router->get('/admin/juuksurid/lisa', [AdminBarberController::class, 'create']);
+        $this->router->post('/admin/juuksurid/salvesta', [AdminBarberController::class, 'store']);
+        $this->router->get('/admin/juuksurid/{id}', [AdminBarberController::class, 'edit']);
+        $this->router->post('/admin/juuksurid/{id}/uuenda', [AdminBarberController::class, 'update']);
+        $this->router->post('/admin/juuksurid/{id}/kustuta', [AdminBarberController::class, 'delete']);
     }
 
     public function run(): void

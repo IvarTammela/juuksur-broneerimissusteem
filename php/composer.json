@@ -1,0 +1,13 @@
+{
+    "name": "juuksur/broneerimissusteem",
+    "description": "Juuksurisalongi broneerimissüsteem - PHP MVC",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    }
+}

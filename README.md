@@ -115,12 +115,39 @@ psql -U kasutaja -d andmebaas -f database/seed.sql
 ### Admin paneel (`/admin`)
 - Dashboard tänaste broneeringute ja statistikaga
 - Broneeringute haldamine (nimekiri, filtreerimine, staatuse muutmine)
-- Juuksurite haldamine (CRUD, teenuste hindade ja kestuste määramine)
+- Juuksurite haldamine (CRUD, teenuste hindade ja kestuste määramine, paroolid)
 - Teenuste haldamine (CRUD)
+
+### Juuksuri paneel (`/admin`)
+Juuksurid logivad sisse samalt `/admin/login` lehelt oma **nime ja parooliga**. Admin seab juuksuri parooli juuksuri muutmise vormis ("Sisselogimine" sektsioon).
+
+Juuksuri piiratud vaade:
+- **Dashboard** — ainult enda broneeringute statistika
+- **Broneeringud** — ainult enda broneeringud (filtreeritakse automaatselt)
+- **Minu profiil** — saab muuta oma pause ja teenuste hindu/kestusi (nime, e-posti jm põhiandmeid muuta ei saa)
+- **Teenused, juuksurite nimekiri** — pole ligipääsu
 
 ## Töö kirjeldus
 
 Põhjalik kirjeldus arhitektuuri, raamistiku, turvalisuse ja koodistandardi kohta: **[php/docs/KIRJELDUS.md](php/docs/KIRJELDUS.md)**
+
+## Deploy
+
+Serveris on failid juurkaustas (`~/htdocs/src/`, `~/htdocs/views/`), mitte `php/` all. Git repo hoiab koodi `php/` kaustas. Peale `git pull` tuleb failid kopeerida:
+
+```bash
+# SSH serverisse
+ssh -p 1022 vhost144452ssh@koolihaldus.ee
+
+# Git pull
+cd ~/htdocs && git pull origin main
+
+# Kopeeri uuendatud failid õigesse kohta
+cp -r ~/htdocs/php/src/* ~/htdocs/src/
+cp -r ~/htdocs/php/views/* ~/htdocs/views/
+```
+
+Kui on andmebaasi muudatusi, jooksuta need eraldi (nt `psql` või PHP skriptiga).
 
 ## Majutus
 

@@ -15,9 +15,9 @@
             <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">E-post</label>
-                <input type="email" name="email" required autofocus
-                       class="border rounded-lg px-4 py-2 w-full" placeholder="admin@juuksur.ee">
+                <label class="block text-sm font-medium text-gray-700 mb-1">E-post või nimi</label>
+                <input type="text" name="email" required autofocus
+                       class="border rounded-lg px-4 py-2 w-full" placeholder="admin@juuksur.ee või Mari Tamm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Parool</label>

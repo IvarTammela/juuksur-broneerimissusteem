@@ -54,8 +54,8 @@ class AdminAuthController extends Controller
             return;
         }
 
-        // Fallback: otsi juuksurite tabelist
-        $barber = Barber::findByEmail($email);
+        // Fallback: otsi juuksurite tabelist (nime järgi)
+        $barber = Barber::findByName($email);
 
         if ($barber && !empty($barber['password_hash']) && password_verify($password, $barber['password_hash'])) {
             session_regenerate_id(true);

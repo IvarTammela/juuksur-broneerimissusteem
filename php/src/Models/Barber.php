@@ -37,4 +37,13 @@ class Barber
         $result = $stmt->fetch();
         return $result ?: null;
     }
+
+    public static function findByName(string $name): ?array
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare('SELECT * FROM barbers WHERE LOWER(name) = LOWER(:name) AND is_active = TRUE');
+        $stmt->execute([':name' => $name]);
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
 }

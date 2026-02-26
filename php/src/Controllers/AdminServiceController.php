@@ -13,7 +13,7 @@ class AdminServiceController extends Controller
 {
     public function index(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         $services = Service::all();
 
@@ -28,7 +28,7 @@ class AdminServiceController extends Controller
 
     public function create(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         $this->render('admin/services/form', [
             'title'    => 'Admin - Lisa teenus',
@@ -41,7 +41,7 @@ class AdminServiceController extends Controller
 
     public function store(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');
@@ -83,7 +83,7 @@ class AdminServiceController extends Controller
 
     public function edit(string $id): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         $service = Service::find($id);
         if (!$service) {
@@ -102,7 +102,7 @@ class AdminServiceController extends Controller
 
     public function update(string $id): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');
@@ -132,7 +132,7 @@ class AdminServiceController extends Controller
 
     public function delete(string $id): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');

@@ -28,4 +28,13 @@ class Barber
         $result = $stmt->fetch();
         return $result ?: null;
     }
+
+    public static function findByEmail(string $email): ?array
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare('SELECT * FROM barbers WHERE email = :email AND is_active = TRUE');
+        $stmt->execute([':email' => $email]);
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
 }

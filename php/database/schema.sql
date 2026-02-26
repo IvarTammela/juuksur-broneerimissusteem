@@ -25,6 +25,7 @@ CREATE TABLE barbers (
     bio TEXT,
     bio_et TEXT,
     image_url VARCHAR(500),
+    password_hash VARCHAR(255),
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

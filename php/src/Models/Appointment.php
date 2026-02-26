@@ -18,6 +18,11 @@ class Appointment
             $params[':status'] = $filters['status'];
         }
 
+        if (!empty($filters['barber_id'])) {
+            $where[] = 'a.barber_id = :barber_id';
+            $params[':barber_id'] = $filters['barber_id'];
+        }
+
         if (!empty($filters['from'])) {
             $where[] = 'a.date >= :from_date';
             $params[':from_date'] = $filters['from'];
@@ -153,39 +158,53 @@ class Appointment
         return $stmt->execute([':status' => $status, ':id' => $id]);
     }
 
-    public static function countToday(): int
+    public static function countToday(?string $barberId = null): int
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT COUNT(*) FROM appointments WHERE date = CURRENT_DATE AND status != 'CANCELLED'");
-        $stmt->execute();
+        $where = "date = CURRENT_DATE AND status != 'CANCELLED'";
+        $params = [];
+        if ($barberId) {
+            $where .= ' AND barber_id = :barber_id';
+            $params[':barber_id'] = $barberId;
+        }
+        $stmt = $db->prepare("SELECT COUNT(*) FROM appointments WHERE {$where}");
+        $stmt->execute($params);
         return (int) $stmt->fetchColumn();
     }
 
-    public static function countWeek(): int
+    public static function countWeek(?string $barberId = null): int
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare("
-            SELECT COUNT(*) FROM appointments
-            WHERE date >= date_trunc('week', CURRENT_DATE)
+        $where = "date >= date_trunc('week', CURRENT_DATE)
               AND date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
-              AND status != 'CANCELLED'
-        ");
-        $stmt->execute();
+              AND status != 'CANCELLED'";
+        $params = [];
+        if ($barberId) {
+            $where .= ' AND barber_id = :barber_id';
+            $params[':barber_id'] = $barberId;
+        }
+        $stmt = $db->prepare("SELECT COUNT(*) FROM appointments WHERE {$where}");
+        $stmt->execute($params);
         return (int) $stmt->fetchColumn();
     }
 
-    public static function upcoming(int $limit = 5): array
+    public static function upcoming(int $limit = 5, ?string $barberId = null): array
     {
         $db = Database::getInstance();
+        $barberWhere = $barberId ? 'AND a.barber_id = :barber_id' : '';
         $stmt = $db->prepare("
             SELECT a.*, b.name AS barber_name, s.name_et AS service_name
             FROM appointments a
             JOIN barbers b ON b.id = a.barber_id
             JOIN services s ON s.id = a.service_id
             WHERE a.date >= CURRENT_DATE AND a.status = 'CONFIRMED'
+            {$barberWhere}
             ORDER BY a.date ASC, a.start_time ASC
             LIMIT :limit
         ");
+        if ($barberId) {
+            $stmt->bindValue(':barber_id', $barberId);
+        }
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();

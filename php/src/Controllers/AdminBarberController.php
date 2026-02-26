@@ -16,7 +16,7 @@ class AdminBarberController extends Controller
 {
     public function index(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         $barbers = Barber::all();
 
@@ -31,7 +31,7 @@ class AdminBarberController extends Controller
 
     public function create(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         $this->render('admin/barbers/form', [
             'title'    => 'Admin - Lisa juuksur',
@@ -47,7 +47,7 @@ class AdminBarberController extends Controller
 
     public function store(): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');
@@ -83,6 +83,14 @@ class AdminBarberController extends Controller
             ':sort_order' => (int) ($_POST['sort_order'] ?? 0),
         ]);
 
+        // Parool
+        $password = $_POST['password'] ?? '';
+        if (!empty($password)) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $db->prepare('UPDATE barbers SET password_hash = :hash WHERE id = :id')
+               ->execute([':hash' => $hash, ':id' => $id]);
+        }
+
         $this->saveBarberServices($id, $_POST);
         $this->saveBarberBreaks($id, $_POST);
 
@@ -93,6 +101,11 @@ class AdminBarberController extends Controller
     public function edit(string $id): void
     {
         $this->requireAuth();
+
+        if ($this->isBarber() && $id !== $this->currentBarberId()) {
+            $this->redirect('/admin');
+            return;
+        }
 
         $barber = Barber::find($id);
         if (!$barber) {
@@ -115,12 +128,18 @@ class AdminBarberController extends Controller
             'breaks' => ScheduleBreak::forBarber($id),
             'userName'       => Session::get('user_name'),
             'csrfToken'      => Session::generateCsrfToken(),
+            'isBarber'       => $this->isBarber(),
         ], 'admin');
     }
 
     public function update(string $id): void
     {
         $this->requireAuth();
+
+        if ($this->isBarber() && $id !== $this->currentBarberId()) {
+            $this->redirect('/admin');
+            return;
+        }
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');
@@ -129,6 +148,18 @@ class AdminBarberController extends Controller
         }
 
         $db = Database::getInstance();
+
+        if ($this->isBarber()) {
+            // Juuksur saab muuta ainult pause ja teenuste hindu/kestusi
+            $this->saveBarberServices($id, $_POST);
+            $this->saveBarberBreaks($id, $_POST);
+
+            Session::flash('success', 'Andmed uuendatud.');
+            $this->redirect('/admin/juuksurid/' . $id);
+            return;
+        }
+
+        // Admin saab kõike muuta
         $stmt = $db->prepare('
             UPDATE barbers SET name = :name, email = :email, phone = :phone,
                 bio_et = :bio_et, is_active = :is_active, sort_order = :sort_order, updated_at = NOW()
@@ -144,6 +175,14 @@ class AdminBarberController extends Controller
             ':sort_order' => (int) ($_POST['sort_order'] ?? 0),
         ]);
 
+        // Parool (ainult admin saab seada)
+        $password = $_POST['password'] ?? '';
+        if (!empty($password)) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $db->prepare('UPDATE barbers SET password_hash = :hash WHERE id = :id')
+               ->execute([':hash' => $hash, ':id' => $id]);
+        }
+
         $this->saveBarberServices($id, $_POST);
         $this->saveBarberBreaks($id, $_POST);
 
@@ -153,7 +192,7 @@ class AdminBarberController extends Controller
 
     public function delete(string $id): void
     {
-        $this->requireAuth();
+        $this->requireAdmin();
 
         if (!$this->validateCsrf()) {
             Session::flash('error', 'Vigane CSRF token.');

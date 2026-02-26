@@ -1,14 +1,19 @@
-<?php $isEdit = $barber !== null; ?>
+<?php
+$isEdit = $barber !== null;
+$isBarberRole = !empty($isBarber);
+$backUrl = $isBarberRole ? '/admin' : '/admin/juuksurid';
+?>
 
 <div class="mb-4">
-    <a href="/admin/juuksurid" class="text-sm text-gray-500 hover:text-gray-700">&larr; Tagasi juuksurite juurde</a>
+    <a href="<?= $backUrl ?>" class="text-sm text-gray-500 hover:text-gray-700">&larr; <?= $isBarberRole ? 'Tagasi dashboardile' : 'Tagasi juuksurite juurde' ?></a>
 </div>
 
-<h2 class="text-2xl font-bold mb-6"><?= $isEdit ? 'Muuda juuksurit' : 'Lisa juuksur' ?></h2>
+<h2 class="text-2xl font-bold mb-6"><?= $isBarberRole ? 'Minu profiil' : ($isEdit ? 'Muuda juuksurit' : 'Lisa juuksur') ?></h2>
 
 <form method="POST" action="<?= $isEdit ? '/admin/juuksurid/' . $barber['id'] . '/uuenda' : '/admin/juuksurid/salvesta' ?>" class="space-y-6">
     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
+    <?php if (!$isBarberRole): ?>
     <div class="bg-white rounded-lg shadow-sm border p-6 space-y-4">
         <h3 class="font-semibold border-b pb-2">Põhiandmed</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -49,6 +54,25 @@
             </label>
         </div>
     </div>
+
+    <!-- Parool -->
+    <div class="bg-white rounded-lg shadow-sm border p-6 space-y-4">
+        <h3 class="font-semibold border-b pb-2">Sisselogimine</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Parool <?= $isEdit ? '(jäta tühjaks, kui ei muuda)' : '' ?></label>
+                <input type="password" name="password"
+                       class="border rounded-lg px-4 py-2 w-full"
+                       autocomplete="new-password">
+            </div>
+        </div>
+        <?php if ($isEdit && !empty($barber['password_hash'])): ?>
+            <p class="text-sm text-green-600">Parool on seatud — juuksur saab sisse logida.</p>
+        <?php elseif ($isEdit): ?>
+            <p class="text-sm text-gray-500">Parool pole seatud — juuksur ei saa sisse logida.</p>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 
     <!-- Teenused ja hinnad -->
     <div class="bg-white rounded-lg shadow-sm border p-6">
@@ -110,9 +134,9 @@
     </div>
 
     <div class="flex gap-4">
-        <a href="/admin/juuksurid" class="px-6 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Tühista</a>
+        <a href="<?= $backUrl ?>" class="px-6 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Tühista</a>
         <button type="submit" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800">
-            <?= $isEdit ? 'Salvesta muudatused' : 'Lisa juuksur' ?>
+            <?= $isBarberRole ? 'Salvesta' : ($isEdit ? 'Salvesta muudatused' : 'Lisa juuksur') ?>
         </button>
     </div>
 </form>

@@ -15,16 +15,18 @@ class AdminAppointmentController extends Controller
         $this->requireAuth();
 
         $settings = SalonSettings::get();
+        $barberId = $this->isBarber() ? $this->currentBarberId() : null;
 
         $this->render('admin/dashboard', [
             'title'           => 'Admin - Dashboard',
             'settings'        => $settings,
-            'todayCount'      => Appointment::countToday(),
-            'weekCount'       => Appointment::countWeek(),
-            'barbersCount'    => count(Barber::active()),
-            'upcoming'        => Appointment::upcoming(5),
+            'todayCount'      => Appointment::countToday($barberId),
+            'weekCount'       => Appointment::countWeek($barberId),
+            'barbersCount'    => $barberId ? null : count(Barber::active()),
+            'upcoming'        => Appointment::upcoming(5, $barberId),
             'userName'        => Session::get('user_name'),
             'csrfToken'       => Session::generateCsrfToken(),
+            'isBarber'        => $this->isBarber(),
         ], 'admin');
     }
 
@@ -38,6 +40,10 @@ class AdminAppointmentController extends Controller
             'from'   => $_GET['from'] ?? null,
             'to'     => $_GET['to'] ?? null,
         ];
+
+        if ($this->isBarber()) {
+            $filters['barber_id'] = $this->currentBarberId();
+        }
 
         $appointments = Appointment::all($filters);
 
@@ -64,6 +70,11 @@ class AdminAppointmentController extends Controller
             return;
         }
 
+        if ($this->isBarber() && $appointment['barber_id'] !== $this->currentBarberId()) {
+            $this->redirect('/admin/broneeringud');
+            return;
+        }
+
         $this->render('admin/appointments/show', [
             'title'       => 'Admin - Broneering',
             'settings'    => $settings,
@@ -81,6 +92,14 @@ class AdminAppointmentController extends Controller
             Session::flash('error', 'Vigane CSRF token.');
             $this->redirect('/admin/broneeringud/' . $id);
             return;
+        }
+
+        if ($this->isBarber()) {
+            $appointment = Appointment::find($id);
+            if (!$appointment || $appointment['barber_id'] !== $this->currentBarberId()) {
+                $this->redirect('/admin/broneeringud');
+                return;
+            }
         }
 
         $status = $_POST['status'] ?? '';

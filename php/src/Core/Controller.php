@@ -35,6 +35,24 @@ class Controller
         }
     }
 
+    protected function isBarber(): bool
+    {
+        return Session::get('user_role') === 'BARBER';
+    }
+
+    protected function currentBarberId(): ?string
+    {
+        return Session::get('barber_id');
+    }
+
+    protected function requireAdmin(): void
+    {
+        $this->requireAuth();
+        if ($this->isBarber()) {
+            $this->redirect('/admin');
+        }
+    }
+
     protected function getInput(): array
     {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

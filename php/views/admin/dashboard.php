@@ -1,19 +1,21 @@
 <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
 
 <!-- Statistika kaardid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-<?= !empty($isBarber) ? '2' : '3' ?> gap-4 mb-8">
     <div class="bg-white rounded-lg shadow-sm border p-5">
-        <p class="text-gray-500 text-sm">Tänased broneeringud</p>
+        <p class="text-gray-500 text-sm"><?= !empty($isBarber) ? 'Minu tänased broneeringud' : 'Tänased broneeringud' ?></p>
         <p class="text-3xl font-bold mt-1"><?= $todayCount ?></p>
     </div>
     <div class="bg-white rounded-lg shadow-sm border p-5">
-        <p class="text-gray-500 text-sm">Selle nädala broneeringud</p>
+        <p class="text-gray-500 text-sm"><?= !empty($isBarber) ? 'Minu nädala broneeringud' : 'Selle nädala broneeringud' ?></p>
         <p class="text-3xl font-bold mt-1"><?= $weekCount ?></p>
     </div>
+    <?php if (empty($isBarber)): ?>
     <div class="bg-white rounded-lg shadow-sm border p-5">
         <p class="text-gray-500 text-sm">Aktiivsed juuksurid</p>
         <p class="text-3xl font-bold mt-1"><?= $barbersCount ?></p>
     </div>
+    <?php endif; ?>
 </div>
 
 <!-- Tulevased broneeringud -->

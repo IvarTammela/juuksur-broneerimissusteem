@@ -131,24 +131,6 @@ Juuksuri piiratud vaade:
 
 Põhjalik kirjeldus arhitektuuri, raamistiku, turvalisuse ja koodistandardi kohta: **[php/docs/KIRJELDUS.md](php/docs/KIRJELDUS.md)**
 
-## Deploy
-
-Serveris on failid juurkaustas (`~/htdocs/src/`, `~/htdocs/views/`), mitte `php/` all. Git repo hoiab koodi `php/` kaustas. Peale `git pull` tuleb failid kopeerida:
-
-```bash
-# SSH serverisse
-ssh -p 1022 vhost144452ssh@koolihaldus.ee
-
-# Git pull
-cd ~/htdocs && git pull origin main
-
-# Kopeeri uuendatud failid õigesse kohta
-cp -r ~/htdocs/php/src/* ~/htdocs/src/
-cp -r ~/htdocs/php/views/* ~/htdocs/views/
-```
-
-Kui on andmebaasi muudatusi, jooksuta need eraldi (nt `psql` või PHP skriptiga).
-
 ## Majutus
 
 Rakendus töötab ElkData jagatud majutusel (Apache + PHP FastCGI + PostgreSQL).

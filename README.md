@@ -100,6 +100,7 @@ psql -U kasutaja -d andmebaas -f database/seed.sql
 
 ### Vaikimisi admin sisselogimine
 
+- URL: [http://koolihaldus.ee/admin](http://koolihaldus.ee/admin)
 - E-post: `admin@juuksur.ee`
 - Parool: `admin123`
 

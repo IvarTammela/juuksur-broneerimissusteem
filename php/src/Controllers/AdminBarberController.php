@@ -8,6 +8,7 @@ use App\Core\Validator;
 use App\Models\Barber;
 use App\Models\BarberService;
 use App\Models\Service;
+use App\Models\ScheduleBreak;
 use App\Models\SalonSettings;
 use App\Core\Database;
 
@@ -38,6 +39,7 @@ class AdminBarberController extends Controller
             'barber'   => null,
             'services' => Service::active(),
             'barberServices' => [],
+            'breaks' => [],
             'userName' => Session::get('user_name'),
             'csrfToken' => Session::generateCsrfToken(),
         ], 'admin');
@@ -82,6 +84,7 @@ class AdminBarberController extends Controller
         ]);
 
         $this->saveBarberServices($id, $_POST);
+        $this->saveBarberBreaks($id, $_POST);
 
         Session::flash('success', 'Juuksur lisatud.');
         $this->redirect('/admin/juuksurid');
@@ -109,6 +112,7 @@ class AdminBarberController extends Controller
             'barber'         => $barber,
             'services'       => Service::active(),
             'barberServices' => $bsMap,
+            'breaks' => ScheduleBreak::forBarber($id),
             'userName'       => Session::get('user_name'),
             'csrfToken'      => Session::generateCsrfToken(),
         ], 'admin');
@@ -141,6 +145,7 @@ class AdminBarberController extends Controller
         ]);
 
         $this->saveBarberServices($id, $_POST);
+        $this->saveBarberBreaks($id, $_POST);
 
         Session::flash('success', 'Juuksur uuendatud.');
         $this->redirect('/admin/juuksurid');
@@ -161,6 +166,25 @@ class AdminBarberController extends Controller
 
         Session::flash('success', 'Juuksur kustutatud.');
         $this->redirect('/admin/juuksurid');
+    }
+
+    private function saveBarberBreaks(string $barberId, array $data): void
+    {
+        ScheduleBreak::deleteForBarber($barberId);
+
+        $breaks = $data['breaks'] ?? [];
+        foreach ($breaks as $brk) {
+            if (empty($brk['start_time']) || empty($brk['end_time'])) continue;
+            if (!isset($brk['day_of_week'])) continue;
+
+            ScheduleBreak::create([
+                'barber_id'   => $barberId,
+                'day_of_week' => $brk['day_of_week'],
+                'start_time'  => $brk['start_time'],
+                'end_time'    => $brk['end_time'],
+                'label'       => $brk['label'] ?? null,
+            ]);
+        }
     }
 
     private function saveBarberServices(string $barberId, array $data): void

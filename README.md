@@ -118,6 +118,10 @@ psql -U kasutaja -d andmebaas -f database/seed.sql
 - Juuksurite haldamine (CRUD, teenuste hindade ja kestuste määramine)
 - Teenuste haldamine (CRUD)
 
+## Töö kirjeldus
+
+Põhjalik kirjeldus arhitektuuri, raamistiku, turvalisuse ja koodistandardi kohta: **[php/docs/KIRJELDUS.md](php/docs/KIRJELDUS.md)**
+
 ## Majutus
 
 Rakendus töötab ElkData jagatud majutusel (Apache + PHP FastCGI + PostgreSQL).
